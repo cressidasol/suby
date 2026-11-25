@@ -7,19 +7,21 @@
 <meta name="description" content="Generate accurate subtitles from any video, free and private. AI transcription runs in your browser. Export SRT, VTT or TXT for YouTube, TikTok, Instagram and your website.">
 <meta property="og:title" content="Suby — Free Video Subtitle Generator">
 <meta property="og:description" content="Drop a video, get SRT/VTT subtitles. Runs in your browser — no uploads, no subscription.">
-<meta name="theme-color" content="#0b1622">
+<meta name="theme-color" content="#030b0b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b1622; --bg2: #0f1e2e; --panel: #13263a; --line: #1f3a54;
-    --text: #e6f1f8; --muted: #8fa9bf; --accent: #5ee0d6; --accent2: #6aa8ff; --ink: #062026;
+    /* 21st.dev "Teal Mist" theme (dark), by serafimcloud */
+    --bg: #030b0b; --bg2: #0b2425; --panel: #061415; --line: #1c3133;
+    --text: #e4edee; --muted: #7a9596; --accent: oklch(0.704 0.14 182.503); --accent2: #00a3d7; --ink: #031a1e;
+    --radius: 0.5rem;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; font-family: Inter, system-ui, sans-serif; color: var(--text); line-height: 1.55;
-    background: radial-gradient(1200px 600px at 80% -10%, #12324a 0%, transparent 60%),
-                radial-gradient(900px 500px at -10% 20%, #0f2a3a 0%, transparent 60%), var(--bg);
+    background: radial-gradient(1200px 600px at 80% -10%, #0b2a2b 0%, transparent 60%),
+                radial-gradient(900px 500px at -10% 20%, #08201f 0%, transparent 60%), var(--bg);
     min-height: 100vh;
   }
   a { color: var(--accent); }
@@ -31,19 +33,19 @@
   nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
   nav a:hover { color: var(--text); }
   .hero { text-align: center; padding: 48px 0 32px; }
-  .pill { display: inline-block; font-size: 13px; color: var(--accent); border: 1px solid var(--line); background: #0f2436; padding: 4px 12px; border-radius: 999px; }
+  .pill { display: inline-block; font-size: 13px; color: var(--accent); border: 1px solid var(--line); background: var(--bg2); padding: 4px 12px; border-radius: 999px; }
   h1 { font-size: clamp(32px, 6vw, 54px); line-height: 1.08; letter-spacing: -.03em; margin: 18px 0 14px; }
   h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .lede { color: var(--muted); font-size: 18px; max-width: 620px; margin: 0 auto; }
-  .card { background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 20px 60px -30px #000; }
+  .card { background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: calc(var(--radius) * 3); padding: 24px; box-shadow: 0 4px 10px rgb(45 45 83 / .12); }
   #drop { display: block; border: 2px dashed var(--line); border-radius: 14px; padding: 40px 16px; text-align: center; cursor: pointer; transition: .2s; }
-  #drop:hover, #drop.over, #drop:focus-within { border-color: var(--accent); background: #0f2a3a; }
+  #drop:hover, #drop.over, #drop:focus-within { border-color: var(--accent); background: var(--bg2); }
   #drop strong { display: block; font-size: 18px; margin-bottom: 4px; }
   #drop small { color: var(--muted); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-top: 18px; }
   label.f { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); flex: 1 1 180px; }
-  select, button { font: inherit; border-radius: 10px; padding: 10px 14px; border: 1px solid var(--line); background: var(--bg2); color: var(--text); }
+  select, button { font: inherit; border-radius: var(--radius); padding: 10px 14px; border: 1px solid var(--line); background: var(--bg2); color: var(--text); }
   button { cursor: pointer; }
   .primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--ink); font-weight: 600; border: 0; flex: 0 0 auto; }
   .primary:disabled { opacity: .45; cursor: not-allowed; }
@@ -52,7 +54,7 @@
   progress { width: 100%; height: 6px; accent-color: var(--accent); margin-top: 8px; }
   #result { display: none; margin-top: 24px; }
   video { width: 100%; border-radius: 12px; background: #000; max-height: 420px; }
-  video::cue { background: rgba(6, 20, 32, .85); color: #e6f1f8; }
+  video::cue { background: rgb(3 11 11 / .85); color: var(--text); }
   .dl { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
   .dl button:hover { border-color: var(--accent); }
   ol#cues { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
