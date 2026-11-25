@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suby — Free Video Subtitle Generator (SRT, VTT)</title>
+<meta name="description" content="Generate accurate subtitles from any video, free and private. AI transcription runs in your browser. Export SRT, VTT or TXT for YouTube, TikTok, Instagram and your website.">
+<meta property="og:title" content="Suby — Free Video Subtitle Generator">
+<meta property="og:description" content="Drop a video, get SRT/VTT subtitles. Runs in your browser — no uploads, no subscription.">
+<meta name="theme-color" content="#0b1622">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b1622; --bg2: #0f1e2e; --panel: #13263a; --line: #1f3a54;
+    --text: #e6f1f8; --muted: #8fa9bf; --accent: #5ee0d6; --accent2: #6aa8ff; --ink: #062026;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: Inter, system-ui, sans-serif; color: var(--text); line-height: 1.55;
+    background: radial-gradient(1200px 600px at 80% -10%, #12324a 0%, transparent 60%),
+                radial-gradient(900px 500px at -10% 20%, #0f2a3a 0%, transparent 60%), var(--bg);
+    min-height: 100vh;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .logo { font-weight: 700; font-size: 20px; letter-spacing: -.02em; display: flex; gap: 8px; align-items: center; }
+  .logo span { width: 26px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: inline-block; position: relative; }
+  .logo span::after { content: ""; position: absolute; left: 5px; right: 5px; bottom: 4px; height: 2px; background: var(--ink); border-radius: 2px; box-shadow: 0 -4px 0 var(--ink); }
+  nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
+  nav a:hover { color: var(--text); }
+  .hero { text-align: center; padding: 48px 0 32px; }
+  .pill { display: inline-block; font-size: 13px; color: var(--accent); border: 1px solid var(--line); background: #0f2436; padding: 4px 12px; border-radius: 999px; }
+  h1 { font-size: clamp(32px, 6vw, 54px); line-height: 1.08; letter-spacing: -.03em; margin: 18px 0 14px; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 620px; margin: 0 auto; }
+  .card { background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 20px 60px -30px #000; }
+  #drop { display: block; border: 2px dashed var(--line); border-radius: 14px; padding: 40px 16px; text-align: center; cursor: pointer; transition: .2s; }
+  #drop:hover, #drop.over, #drop:focus-within { border-color: var(--accent); background: #0f2a3a; }
+  #drop strong { display: block; font-size: 18px; margin-bottom: 4px; }
+  #drop small { color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-top: 18px; }
+  label.f { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); flex: 1 1 180px; }
+  select, button { font: inherit; border-radius: 10px; padding: 10px 14px; border: 1px solid var(--line); background: var(--bg2); color: var(--text); }
+  button { cursor: pointer; }
+  .primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--ink); font-weight: 600; border: 0; flex: 0 0 auto; }
+  .primary:disabled { opacity: .45; cursor: not-allowed; }
+  button:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #status { margin-top: 16px; color: var(--muted); font-size: 14px; min-height: 1.5em; }
+  progress { width: 100%; height: 6px; accent-color: var(--accent); margin-top: 8px; }
+  #result { display: none; margin-top: 24px; }
+  video { width: 100%; border-radius: 12px; background: #000; max-height: 420px; }
+  video::cue { background: rgba(6, 20, 32, .85); color: #e6f1f8; }
+  .dl { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+  .dl button:hover { border-color: var(--accent); }
+  ol#cues { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+  ol#cues li { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  ol#cues li:last-child { border: 0; }
+  ol#cues time { color: var(--accent2); font-variant-numeric: tabular-nums; cursor: pointer; }
+  ol#cues [contenteditable]:focus { outline: 1px solid var(--accent); border-radius: 4px; }
+  section h2 { font-size: 28px; letter-spacing: -.02em; margin: 64px 0 20px; text-align: center; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .grid .card h3 { margin: 0 0 6px; font-size: 17px; color: var(--accent); }
+  .grid .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 8px 0 0; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; padding: 48px 0 32px; }
+  @media (max-width: 560px) { nav { display: none; } ol#cues li { grid-template-columns: 1fr; gap: 2px; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><span aria-hidden="true"></span>suby</div>
+    <nav><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <span class="pill">Free · Private · No sign-up</span>
+      <h1>Subtitles for every video,<br><em>without the price tag.</em></h1>
+      <p class="lede">Drop in a video and get accurate captions in SRT, VTT or plain text. The AI runs in your browser, so your footage never leaves your device.</p>
+    </div>
+
+    <div class="card">
+      <label id="drop">
+        <strong>Drop a video or audio file</strong>
+        <small id="fname">MP4, MOV, WebM, MP3, WAV. Or click to browse.</small>
+        <input id="file" class="sr" type="file" accept="video/*,audio/*">
+      </label>
+      <div class="row">
+        <label class="f">Accuracy
+          <select id="model">
+            <option value="onnx-community/whisper-base">Balanced (~80 MB, first run)</option>
+            <option value="onnx-community/whisper-tiny">Fast (~40 MB)</option>
+            <option value="onnx-community/whisper-small">Best (~250 MB)</option>
+          </select>
+        </label>
+        <label class="f">Language
+          <select id="lang">
+            <option value="">Auto-detect</option>
+            <option value="english">English</option><option value="spanish">Spanish</option>
+            <option value="french">French</option><option value="german">German</option>
+            <option value="portuguese">Portuguese</option><option value="italian">Italian</option>
+            <option value="dutch">Dutch</option><option value="japanese">Japanese</option>
+            <option value="korean">Korean</option><option value="chinese">Chinese</option>
+            <option value="hindi">Hindi</option><option value="arabic">Arabic</option>
+          </select>
+        </label>
+        <button id="go" class="primary" disabled>Generate subtitles</button>
+      </div>
+      <div id="status" role="status" aria-live="polite"></div>
+      <progress id="bar" hidden></progress>
+
+      <div id="result">
+        <video id="player" controls></video>
+        <div class="dl">
+          <button data-fmt="srt">Download .srt</button>
+          <button data-fmt="vtt">Download .vtt</button>
+          <button data-fmt="txt">Download .txt</button>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 8px">Click a timestamp to jump there. Click text to fix a word.</p>
+        <ol id="cues"></ol>
+      </div>
+    </div>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <div class="grid">
+        <div class="card"><h3>1. Drop your video</h3><p>Any common video or audio format. Nothing is uploaded.</p></div>
+        <div class="card"><h3>2. AI transcribes it</h3><p>OpenAI's Whisper model runs on your device, with GPU acceleration where your browser supports it.</p></div>
+        <div class="card"><h3>3. Export and publish</h3><p>Download SRT for YouTube and Premiere, VTT for the web, or TXT for show notes and blog posts.</p></div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <h2>FAQ</h2>
+      <details><summary>Is it really free?</summary><p>Yes. Transcription runs on your own computer, so there are no servers for us to bill you for.</p></details>
+      <details><summary>Do subtitles help SEO?</summary><p>Yes. Search engines can't watch video, but they can read captions and transcripts. Upload the SRT to YouTube and paste the TXT transcript on your page.</p></details>
+      <details><summary>Is my video private?</summary><p>Your file is processed in your browser tab and never sent anywhere. Only the AI model is downloaded, once, and then cached.</p></details>
+      <details><summary>How long can my video be?</summary><p>Long videos work, but speed depends on your device. A laptop with a modern GPU handles about an hour of audio in a few minutes.</p></details>
+    </section>
+  </main>
+
+  <footer>suby. Captions make content accessible to everyone.</footer>
+</div>
+
+<script type="module">
+import { stamp, toCues, toSRT, toVTT, toTXT } from './format.js';
+
+const $ = id => document.getElementById(id);
+const worker = new Worker('./worker.js', { type: 'module' });
+let file, cues = [], trackUrl;
+
+const say = (msg, p) => { $('status').textContent = msg; $('bar').hidden = p === undefined; if (p !== undefined) p === null ? $('bar').removeAttribute('value') : ($('bar').value = p); };
+
+function pick(f) {
+  if (!f || !/^(video|audio)\//.test(f.type)) return say('Please choose a video or audio file.');
+  file = f; $('fname').textContent = f.name; $('go').disabled = false; say('');
+}
+$('file').onchange = e => pick(e.target.files[0]);
+const drop = $('drop');
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); pick(e.dataTransfer.files[0]); };
+
+let duration = 0;
+$('go').onclick = async () => {
+  $('go').disabled = true; say('Reading audio…', null);
+  let audio;
+  try {
+    // Whisper wants 16 kHz mono; the browser resamples during decode.
+    const ctx = new AudioContext({ sampleRate: 16000 });
+    const buf = await ctx.decodeAudioData(await file.arrayBuffer());
+    ctx.close(); duration = buf.duration;
+    audio = buf.getChannelData(0);
+    if (buf.numberOfChannels > 1) { const r = buf.getChannelData(1); audio = audio.map((v, i) => (v + r[i]) / 2); }
+  } catch {
+    $('go').disabled = false;
+    return say("Couldn't read the audio in this file. Try MP4, WebM or MP3.");
+  }
+  worker.postMessage({ audio, model: $('model').value, language: $('lang').value }, [audio.buffer]);
+};
+
+worker.onmessage = ({ data }) => {
+  if (data.type === 'download') say(`Downloading AI model (one time)… ${Math.round(data.progress)}%`, data.progress / 100);
+  if (data.type === 'transcribing') say('Transcribing… this can take a minute.', null);
+  if (data.type === 'error') { say('Something went wrong: ' + data.message); $('go').disabled = false; }
+  if (data.type === 'done') { cues = toCues(data.chunks, duration); render(); say(`Done: ${cues.length} captions.`); $('go').disabled = false; }
+};
+
+function render() {
+  const list = $('cues'); list.replaceChildren();
+  cues.forEach((c, i) => {
+    const li = document.createElement('li');
+    const t = document.createElement('time'); t.textContent = stamp(c.start, '.').slice(0, 8); t.tabIndex = 0;
+    t.onclick = t.onkeydown = e => { if (e.type === 'click' || e.key === 'Enter') { $('player').currentTime = c.start; $('player').play(); } };
+    const s = document.createElement('span'); s.contentEditable = 'plaintext-only'; s.textContent = c.text;
+    s.setAttribute('aria-label', `Caption ${i + 1} text`);
+    s.oninput = () => { c.text = s.textContent; refreshTrack(); };
+    li.append(t, s); list.append(li);
+  });
+  const v = $('player'); v.src = URL.createObjectURL(file);
+  $('result').style.display = 'block'; refreshTrack();
+}
+
+function refreshTrack() {
+  const v = $('player'); v.querySelector('track')?.remove(); if (trackUrl) URL.revokeObjectURL(trackUrl);
+  trackUrl = URL.createObjectURL(new Blob([toVTT(cues)], { type: 'text/vtt' }));
+  const tr = Object.assign(document.createElement('track'), { kind: 'subtitles', label: 'Subtitles', srclang: 'en', src: trackUrl, default: true });
+  v.append(tr); tr.track.mode = 'showing';
+}
+
+document.querySelectorAll('[data-fmt]').forEach(b => b.onclick = () => {
+  const fmt = b.dataset.fmt, body = { srt: toSRT, vtt: toVTT, txt: toTXT }[fmt](cues);
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([body], { type: 'text/plain' })),
+    download: file.name.replace(/\.[^.]+$/, '') + '.' + fmt,
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>
