@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { stamp, toCues, toSRT, toVTT, toTXT } from './format.js';
+import { stamp, toCues, toSRT, toVTT, toTXT } from './public/format.js';
 
 assert.equal(stamp(0), '00:00:00,000');
 assert.equal(stamp(3661.5), '01:01:01,500');

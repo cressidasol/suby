@@ -9,12 +9,13 @@ Transcription runs in the browser with Whisper ([transformers.js](https://github
 Any static file server works; module workers don't load over `file://`.
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory public
 ```
 
 ## Files
 
-- `index.html`: landing page and app UI
-- `worker.js`: Whisper pipeline (off the main thread)
-- `format.js`: SRT, VTT and TXT writers
+- `public/index.html`: landing page and app UI
+- `public/worker.js`: Whisper pipeline (off the main thread)
+- `public/format.js`: SRT, VTT and TXT writers
+- `wrangler.jsonc`: Cloudflare Workers static-assets config (`npx wrangler deploy`)
 - `format.test.mjs`: run with `node format.test.mjs`
